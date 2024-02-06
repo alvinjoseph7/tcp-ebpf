@@ -19,10 +19,10 @@ int count_tcp_connections(struct __sk_buff *skb) {
     if (ip->protocol == IPPROTO_TCP) {
         if (tcp->syn) {
             // Increment connection count on SYN (connection establishment).
-            connections.update(&tcp->sk, &(int){1});
+            connections.update(&tcp->dest, &(int){1});
         } else if (tcp->fin || tcp->rst) {
             // Decrement connection count on FIN or RST (connection termination).
-            connections.delete(&tcp->sk);
+            connections.delete(&tcp->dest);
         }
     }
 

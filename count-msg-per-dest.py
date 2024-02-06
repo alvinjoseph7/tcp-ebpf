@@ -6,7 +6,7 @@ from time import sleep
 # BPF program
 prog = """
 #include <uapi/linux/ptrace.h>
-#include <libbpf/include/uapi/linux/bpf.h>
+// #include <libbpf/include/uapi/linux/bpf.h>
 #include <linux/if_ether.h>
 #include <linux/ip.h>
 #include <linux/pkt_cls.h>
