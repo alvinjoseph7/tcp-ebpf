@@ -19,7 +19,8 @@ int trace_cwnd(struct pt_regs *ctx) {
     tsk = (struct tcp_sock *)sk;
 
     // Access cwnd value from the TCP control block (TCB)
-     bpf_probe_read_kernel(&cwnd, sizeof(cwnd), &sk->__sk_common.skc_cbuf[TCP_CWND]);
+    // bpf_probe_read_kernel(&cwnd, sizeof(cwnd), &sk->__sk_common.skc_cbuf[TCP_CWND]);
+    bpf_probe_read_kernel(&cwnd, sizeof(cwnd), &tsk->rcv_wnd);
     // cwnd = tsk->rcv_wnd;
 
     u32 pid = bpf_get_current_pid_tgid() >> 32;
