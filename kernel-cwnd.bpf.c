@@ -1,3 +1,7 @@
+// script to update congestion window using eBPF map
+// set value in map using bpftool map update
+
+
 /* Copyright (c) 2017 Facebook
  *
  * This program is free software; you can redistribute it and/or
@@ -11,6 +15,9 @@
  *
  * Use "bpftool cgroup attach $cg sock_ops $prog" to load this BPF program.
  */
+
+
+
 
 // #include <uapi/linux/bpf.h>
 // #include <uapi/linux/if_ether.h>
@@ -47,8 +54,6 @@ SEC("sockops")
 int bpf_iw(struct bpf_sock_ops *skops)
 // int bpf_iw(struct sock *skops)
 {
-	// int rwnd_init = 40;
-	// int iw = 40;
 	int rv = 0;		// stores retval 
 	struct in_addr addr;
 	int key = 0;
@@ -58,9 +63,6 @@ int bpf_iw(struct bpf_sock_ops *skops)
 
 	addr.s_addr = skops->remote_ip4;
 
-
-	// user_wnd = bpf_map_lookup_elem(&wnd_map, &key);
-		
 
 	/* For testing purposes, only execute rest of BPF program
 	 * if neither port numberis 55601
@@ -82,20 +84,7 @@ int bpf_iw(struct bpf_sock_ops *skops)
 	bpf_printk("Opcode: %d\n", op);
 #endif
 
-	/* Usually there would be a check to insure the hosts are far
-	 * from each other so it makes sense to increase buffer sizes
-	 */
 	switch (op) {
-	// case BPF_SOCK_OPS_RWND_INIT:
-		// rv = rwnd_init;
-		// break;
-	// case BPF_SOCK_OPS_TCP_CONNECT_CB:
-	// 	/* Set sndbuf and rcvbuf of active connections */
-	// 	rv = bpf_setsockopt(skops, SOL_SOCKET, SO_SNDBUF, &bufsize,
-	// 			    sizeof(bufsize));
-	// 	rv += bpf_setsockopt(skops, SOL_SOCKET, SO_RCVBUF,
-	// 			     &bufsize, sizeof(bufsize));
-	// 	break;
 	case BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB:
 	case BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB:
 
@@ -117,21 +106,6 @@ int bpf_iw(struct bpf_sock_ops *skops)
 		}
 
 		break;
-
-
-	// iw = 20;
-
-	// rv = bpf_setsockopt(skops, SOL_TCP, TCP_BPF_IW, &iw, sizeof(iw));
-	// 	bpf_printk("Passive cwnd %d", iw );
-	// 	break;
-	// 	/* Set sndbuf and rcvbuf of passive connections */
-	// 	rv = bpf_setsockopt(skops, SOL_SOCKET, SO_SNDBUF, &bufsize,
-	// 			    sizeof(bufsize));
-	// 	rv +=  bpf_setsockopt(skops, SOL_SOCKET, SO_RCVBUF,
-	// 			      &bufsize, sizeof(bufsize));
-	// 	break;
-	// default:
-		// rv = -1;
 	}
 #ifdef DEBUG
 	bpf_printk("RV Val:  %d\n", rv);
@@ -139,14 +113,5 @@ int bpf_iw(struct bpf_sock_ops *skops)
 	skops->reply = rv;
 	return 1;
 }
-
-
-
-// SEC("kprobe/tcp_v4_connect")
-// int BPF_KPROBE(tcp_v4_connect, struct bpf_sock_ops *sk)
-// {
-// 	return bpf_iw(sk);
-// }
-
 
 char _license[] SEC("license") = "GPL";

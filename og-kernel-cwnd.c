@@ -1,3 +1,7 @@
+// original BPF program to set initial congestion window and initial receive
+//  window to 40 packets and send and receive buffers to 1.5MB.
+
+
 /* Copyright (c) 2017 Facebook
  *
  * This program is free software; you can redistribute it and/or

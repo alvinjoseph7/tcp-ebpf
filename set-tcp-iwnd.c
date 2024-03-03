@@ -1,3 +1,7 @@
+// program to set user-defined values for 
+// cwnd, rcv_wnd, buffer
+
+
 /* Copyright (c) 2018 Viet-Hoang Tran */
 
 #include <stddef.h>
