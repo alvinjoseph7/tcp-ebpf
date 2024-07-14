@@ -1,9 +1,10 @@
 #!/bin/bash
 set -x
 
+BUILD_NAME=bpf_sockops
 
-# detach and clear the bpf programs
-sudo bpftool cgroup detach "/sys/fs/cgroup/" sock_ops pinned "/sys/fs/bpf/bpf_sockops" 
-sudo unlink /sys/fs/bpf/bpf_sockops
-ls /sys/fs/bpf
-sudo rm -rf /sys/fs/bpf/*
+sudo bpftool cgroup detach /sys/fs/cgroup/unified/${BUILD_NAME} sock_ops pinned /sys/fs/bpf/${BUILD_NAME}
+
+if [ -e "/sys/fs/bpf/bpf_sockops" ]; then
+	sudo rm -rf /sys/fs/bpf/*
+fi

@@ -1,16 +1,12 @@
 #!/bin/bash
-set -x
-set -e
+set -xe
+
+BUILD_NAME=bpf_sockops
 
 sudo mount -t bpf bpf /sys/fs/bpf/
+sudo mkdir -p /sys/fs/cgroup/unified/${BUILD_NAME}
 
-# check if old program already loaded
-if [ -e "/sys/fs/bpf/bpf_sockops" ]; then
-    echo ">>> bpf_sockops already loaded, uninstalling..."
-    ./unload.sh
-    echo ">>> old program already deleted..."
-fi
+./unload.sh
 
-# load and attach sock_ops program
-sudo bpftool prog load haha.o /sys/fs/bpf/bpf_sockops type sockops pinmaps /sys/fs/bpf/
-sudo bpftool cgroup attach "/sys/fs/cgroup/" sock_ops pinned "/sys/fs/bpf/bpf_sockops"
+sudo bpftool prog load ./build/${BUILD_NAME}.o /sys/fs/bpf/${BUILD_NAME} type sockops pinmaps /sys/fs/bpf/
+sudo bpftool cgroup attach /sys/fs/cgroup/unified/${BUILD_NAME} sock_ops pinned /sys/fs/bpf/${BUILD_NAME}
